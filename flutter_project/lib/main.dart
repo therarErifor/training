@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter. Task #1'),
     );
   }
 }
@@ -30,17 +32,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final formKey = GlobalKey<FormState>();
-  var text = '';
-  var myController = TextEditingController();
+  String _text = '';
+  final _controller = TextEditingController();
 
-  void _saveText() {
-    setState(() {
-      text = myController.text;
-    });
+
+  _saveText(){
+    setState(() =>_text = _controller.text);
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -48,33 +50,34 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
 
       body: Container(
-
         child: Column(
           key: formKey,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'Enter some text',
-            ),
-            Padding(
-                padding: EdgeInsets.all(20),
-                child:TextFormField(),
-            ),
             Text(
-              '$text',
+              'Enter some text',
+              style: Theme.of(context).textTheme.headline6,
             ),
 
+            Padding(
+                padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+                child:TextFormField(
+                  textAlign: TextAlign.center,
+                  controller: _controller
+                ),
+            ),
+
+            ElevatedButton(
+                onPressed: _saveText,
+                child: Text('Save the text'),
+            ),
+            SizedBox(height: 15,),
+            Text(
+            '$_text',
+            ),
           ],
         ),
-
       ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: _saveText,
-        tooltip: '',
-        child: const Icon(Icons.text_fields),
-        backgroundColor: Colors.blue,
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
