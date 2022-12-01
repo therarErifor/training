@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,7 +8,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,10 +30,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final formKey = GlobalKey<FormState>();
   String _text = '';
   final _controller = TextEditingController();
-
 
   _saveText(){
     setState(() =>_text = _controller.text);
@@ -52,19 +48,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
       body: Container(
         child: Column(
-          key: formKey,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'Enter some text',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-
             Padding(
                 padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
-                child:TextFormField(
-                  textAlign: TextAlign.center,
-                  controller: _controller
+                child:TextFormField(decoration: InputDecoration(
+                  border: InputBorder.none,
+                  fillColor: Colors.black12,
+                  filled: true,
+                  hintText: "Enter some text",
+                ),
+                    textAlign: TextAlign.center,
+                    controller: _controller
                 ),
             ),
 
@@ -73,8 +68,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text('Save the text'),
             ),
             SizedBox(height: 15,),
-            Text(
-            '$_text',
+            Container(
+              color: Colors.black12,
+              alignment: Alignment.bottomCenter,
+              padding: EdgeInsets.symmetric(vertical: 15.0),
+              margin: EdgeInsets.symmetric(horizontal: 50.0),
+              child:
+
+                Text(
+                  '$_text',
+                  style: (TextStyle(fontSize: 16)),
+                ),
             ),
           ],
         ),
