@@ -31,102 +31,128 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Duration duration = Duration();
   Timer? timer;
+
+
   @override
-  void initState(){
+ initState() {
     super.initState();
-    startTimer();
+     // startTimer();
+    reset();
   }
-  void addTime(){
+  void reset(){
+      setState(() => duration = Duration());
+
+  }
+
+
+  void addTime() {
     final addSeconds = 1;
     setState(() {
       final seconds = duration.inSeconds + addSeconds;
       duration = Duration(seconds: seconds);
     });
   }
-  void startTimer(){
+
+  void startTimer() {
     timer = Timer.periodic(Duration(seconds: 1), (_) => addTime());
+
+  }
+  void stopTimer(){
+    setState(() => timer?.cancel());
   }
 
-
   @override
-  Widget build(BuildContext context)  => Scaffold(
-    body: Center(child: buildTime(),),
-  );
-  //{
-  // return Scaffold(
-  //   appBar: AppBar(
-  //     title: Text(widget.title),
-  //   ),
-  //   body: Center(
-  //     child: Column(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       children: <Widget>[
-  //         const Text(
-  //           'Tup the button to start timer',
-  //           style: (TextStyle(fontSize: 18)),
-  //         ),
-  //         SizedBox(height: 15),
-  //         Text(
-  //           '$_seconds',
-  //         style: (TextStyle(fontSize: 50)),
-  //         )
-  //       ],
-  //     ),
-  //   ),
-  //
-  //   bottomNavigationBar: BottomAppBar(
-  //     shape: const CircularNotchedRectangle(),
-  //     child: Container(height: 50.0),
-  //   ),
-  //   floatingActionButton: FloatingActionButton(
-  //
-  //     onPressed: _timerStart,
-  //
-  //     child: const Icon(Icons.access_time_outlined),
-  //
-  //   ),
-  //   floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-  //   // This trailing comma makes auto-formatting nicer for build methods.
-  // );
-  Widget buildTime(){
+  Widget build(BuildContext context) =>
+      Scaffold(
+          appBar:AppBar(
+            title: Text(widget.title),
+          ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            buildTime(),
+            Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                  children:[
+                    ElevatedButton(
+                      // style: ButtonStyle(
+                      //   foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                      // ),
+                      onPressed: () {startTimer();},
+                      child: Text('Start'),
+                    ),
+                      SizedBox(width: 24, height: 100,),
+                    ElevatedButton(
+                      // style: ButtonStyle(
+                      //   foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                      // ),
+                      onPressed: () {stopTimer();},
+                      child: Text('Stop'),
+                    ),
+                      SizedBox(width: 24, height: 100,),
+                    ElevatedButton(
+                      // style: ButtonStyle(
+                      //   foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                      // ),
+                      onPressed: () {reset();},
+                      child: Text('Reset'),
+                    ),
+            ],
+
+            ),
+          ],
+        ),
+      );
+
+
+
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: (){startTimer();},
+        //   tooltip: 'Increment',
+        //   child: const Icon(Icons.timer),
+        // ),
+
+  Widget buildTime() {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = twoDigits(duration.inHours);
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    // final hours = twoDigits(duration.inHours);
+    // final minutes = twoDigits(duration.inMinutes.remainder(60));
     final seconds = twoDigits(duration.inSeconds.remainder(60));
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        buildTimeCard(time: hours, header: 'hours'),
-        const SizedBox(width: 8),
-        buildTimeCard(time: minutes, header: 'minutes'),
-        const SizedBox(width: 8),
+        // buildTimeCard(time: hours, header: 'hours'),
+        // const SizedBox(width: 8),
+        // buildTimeCard(time: minutes, header: 'minutes'),
+        // const SizedBox(width: 8),
         buildTimeCard(time: seconds, header: 'seconds'),
       ],
     );
-  }
-}
-//}
 
-Widget buildTimeCard({required String time,
-  required String header}) =>
-    Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          padding: EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.green,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(time,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.limeAccent,
-              fontSize: 72,
+  }
+
+  Widget buildTimeCard({required String time,
+    required String header}) =>
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.green,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Text(time,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                fontSize: 72,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 24),
-        Text(header),
-      ],
-    );
+          const SizedBox(height: 24),
+          Text(header),
+        ],
+      );
+}
+
