@@ -31,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Duration duration = Duration();
   Timer? timer;
+  String mark = '';
 
 
   @override
@@ -41,11 +42,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
   void _reset(){
       setState(() => duration = Duration());
-
+      mark = '';
   }
 
 
-  void addTime() {
+  void _addTime() {
     final addMilliseconds = 10;
     setState(() {
       final milliseconds = duration.inMilliseconds + addMilliseconds;
@@ -54,13 +55,23 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _startTimer() {
-    timer = Timer.periodic(Duration(milliseconds: 10), (_) => addTime());
+    timer = Timer.periodic(Duration(milliseconds: 10), (_) => _addTime());
 
   }
   void _stopTimer(){
     setState(() => timer?.cancel());
   }
 
+  void markTime(){
+
+    setState(() {
+String saveTime(int n) => n.toString();
+String _min = saveTime(duration.inMinutes);
+String _sec = saveTime(duration.inSeconds);
+String _milSec = saveTime(duration.inMilliseconds);
+      mark = _min + ':' + _sec + '.' + _milSec.substring(1, 3);
+    });
+  }
   @override
   Widget build(BuildContext context) =>
       Scaffold(
@@ -73,6 +84,10 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             buildTime(),
             buildButtons(),
+            new Text(
+                '$mark',
+              style: TextStyle(fontSize: 25),
+            ),
           ],
         ),
       );
@@ -98,8 +113,14 @@ Widget buildButtons() {
       ),
       SizedBox(width: 15, height: 100,),
       ElevatedButton(
-        onPressed: () {_reset();},
-        child: Text('Reset'),
+        onPressed: () {
+          if (isRunning) {
+            markTime();
+          }else {
+            _reset();
+          }
+          },
+        child: Text(isRunning ? ' Mark ' : ' Reset '),
       ),
     ],
  )
@@ -115,12 +136,12 @@ Widget buildButtons() {
 }
 
   Widget buildTime() {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    String Digits(int n) => n.toString().padLeft(3, '0');
+    String _twoDigits(int n) => n.toString().padLeft(2, '0');
+    String _milliDigits(int n) => n.toString().padLeft(3, '0');
     // final hours = twoDigits(duration.inHours);
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    final milliSeconds = Digits(duration.inMilliseconds.remainder(1000));
+    final minutes = _twoDigits(duration.inMinutes.remainder(60));
+    final seconds = _twoDigits(duration.inSeconds.remainder(60));
+    final milliSeconds = _milliDigits(duration.inMilliseconds.remainder(1000));
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
