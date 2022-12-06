@@ -83,8 +83,10 @@ Widget buildButtons() {
  return isRunning || !isCompleted
   ?Row(
     mainAxisAlignment: MainAxisAlignment.center,
+
     children:[
       ElevatedButton(
+
         onPressed: () {
           if (isRunning) {
             _stopTimer();
@@ -92,7 +94,7 @@ Widget buildButtons() {
             _startTimer();
           }
           },
-        child: Text(isRunning ? 'Stop' : 'Resume'),
+        child: Text(isRunning ? '   Stop   ' : 'Resume'),
       ),
       SizedBox(width: 15, height: 100,),
       ElevatedButton(
@@ -122,15 +124,15 @@ Widget buildButtons() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
+      children:[
         // buildTimeCard(time: hours, header: 'hours'),
         // const SizedBox(width: 8),
         buildTimeCard(time: minutes),
         Text(':',
-        style: TextStyle(fontSize: 72, color: Colors.blueAccent)),
+        style: TextStyle(fontSize: 72, color: Colors.lightGreen)),
         buildTimeCard(time: seconds),
         Text('.',
-            style: TextStyle(fontSize: 72, color: Colors.blueAccent)),
+            style: TextStyle(fontSize: 72, color: Colors.lightGreen)),
         buildTimeCard(time: milliSeconds.substring(0, 2)),
       ],
     );
