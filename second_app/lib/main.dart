@@ -12,11 +12,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Timer',
+      title: 'StopWatch',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: const MyHomePage(title: 'Timer'),
+      home: const MyHomePage(title: 'StopWatch'),
     );
   }
 }
@@ -34,6 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Duration duration = Duration();
   Timer? timer;
   String mark = '';
+  int _count = 1;
 
   @override
   initState() {
@@ -76,21 +77,31 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: Text(widget.title),
         ),
         body: Column(
+
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             buildTime(),
             buildButtons(),
-            new Text(
-              '$mark',
-              style: TextStyle(fontSize: 25),
-            ),
+            buildMarkTime(mark: mark),
           ],
         ),
       );
+
+  Widget buildMarkTime({required mark}) {
+    return Column(
+      children: <Widget>[
+        Text(
+          '$mark',
+          style: TextStyle(fontSize: 25),
+        ),
+      ],
+    );
+  }
 
   Widget buildButtons() {
     final isRunning = timer == null ? false : timer!.isActive;
@@ -181,7 +192,7 @@ class _MyHomePageState extends State<MyHomePage> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
-                fontSize: 72,
+                fontSize: 60,
               ),
             ),
           ),
