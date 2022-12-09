@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Duration duration = Duration();
   Timer? timer;
   String mark = '';
-  int _count = 1;
+  int count = 0;
 
   @override
   initState() {
@@ -46,6 +46,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _reset() {
     setState(() => duration = Duration());
     mark = '';
+    fields = [''];
+    count = 0;
   }
 
   void _addTime() {
@@ -67,12 +69,17 @@ class _MyHomePageState extends State<MyHomePage> {
   void markTime() {
     setState(() {
       String saveTime(int n) => n.toString();
-      String _min = saveTime(duration.inMinutes);
-      String _sec = saveTime(duration.inSeconds);
-      String _milSec = saveTime(duration.inMilliseconds);
+      final _min = saveTime(duration.inMinutes.remainder(60));
+      final _sec = saveTime(duration.inSeconds.remainder(60));
+      final _milSec = saveTime(duration.inMilliseconds.remainder(1000));
       mark = _min + ':' + _sec + '.' + _milSec.substring(1, 3);
+      count++;
+      final textCount = saveTime(count);
+      fields.add('$textCount.   $mark');
     });
   }
+
+  List<String> fields = [''];
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -81,27 +88,33 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(widget.title),
         ),
         body: Column(
-
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
+            SizedBox(height: 80),
             buildTime(),
-            buildButtons(),
-            buildMarkTime(mark: mark),
+            SizedBox(height: 40),
+            Container(
+              height: 300,
+              child: Scrollbar(
+                child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: fields.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Text(fields[index],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 30,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.green));
+                    }),
+              ),
+            ),
+            Expanded(child: buildButtons()),
+            SizedBox(height: 50),
           ],
         ),
       );
-
-  Widget buildMarkTime({required mark}) {
-    return Column(
-      children: <Widget>[
-        Text(
-          '$mark',
-          style: TextStyle(fontSize: 25),
-        ),
-      ],
-    );
-  }
 
   Widget buildButtons() {
     final isRunning = timer == null ? false : timer!.isActive;
@@ -109,6 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return isRunning || !isCompleted
         ? Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               ElevatedButton(
                 onPressed: () {
@@ -118,7 +132,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     _startTimer();
                   }
                 },
-                child: Text(isRunning ? '   Stop   ' : 'Resume'),
+                child: Text(isRunning ? '   Stop   ' : 'Resume',
+                    style: TextStyle(
+                      fontSize: 25,
+                    )),
               ),
               SizedBox(
                 width: 15,
@@ -132,12 +149,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     _reset();
                   }
                 },
-                child: Text(isRunning ? ' Mark ' : ' Reset '),
+                child: Text(isRunning ? ' Mark ' : ' Reset ',
+                    style: TextStyle(
+                      fontSize: 25,
+                    )),
               ),
             ],
           )
         : Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               SizedBox(
                 width: 15,
@@ -147,7 +168,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () {
                   _startTimer();
                 },
-                child: Text('Start'),
+                child: Text('Start',
+                    style: TextStyle(
+                      fontSize: 28,
+                    )),
               ),
             ],
           );
@@ -167,9 +191,9 @@ class _MyHomePageState extends State<MyHomePage> {
         // buildTimeCard(time: hours, header: 'hours'),
         // const SizedBox(width: 8),
         buildTimeCard(time: minutes),
-        Text(':', style: TextStyle(fontSize: 72, color: Colors.lightGreen)),
+        Text(':', style: TextStyle(fontSize: 72, color: Colors.green)),
         buildTimeCard(time: seconds),
-        Text('.', style: TextStyle(fontSize: 72, color: Colors.lightGreen)),
+        Text('.', style: TextStyle(fontSize: 72, color: Colors.green)),
         buildTimeCard(time: milliSeconds.substring(0, 2)),
       ],
     );
