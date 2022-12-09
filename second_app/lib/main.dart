@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
       mark = _min + ':' + _sec + '.' + _milSec.substring(1, 3);
       count++;
       final textCount = saveTime(count);
-      fields.add('$textCount.   $mark');
+      fields.insert(0, '$textCount.   $mark');
     });
   }
 
