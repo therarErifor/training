@@ -23,7 +23,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
   final String title;
 
   @override
@@ -35,6 +34,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Timer? timer;
   String mark = '';
   int count = 0;
+  List<String> fields = [''];
+  final GlobalKey<AnimatedListState> _key = GlobalKey();
 
   @override
   initState() {
@@ -43,12 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _reset();
   }
 
-  void _reset() {
-    setState(() => duration = Duration());
-    mark = '';
-    fields = [''];
-    count = 0;
-  }
+
 
   void _addTime() {
     final addMilliseconds = 10;
@@ -65,21 +61,35 @@ class _MyHomePageState extends State<MyHomePage> {
   void _stopTimer() {
     setState(() => timer?.cancel());
   }
-
+  void _reset() {
+    setState(() => duration = Duration());
+    mark = '';
+    fields = [''];
+    count = 0;
+    // _key.currentState!.removeItem(
+    //     0,
+    // (context, animaton)=>
+    //   _reset(),
+    //     });
+  }
   void markTime() {
     setState(() {
-      String saveTime(int n) => n.toString();
+      String saveTime(int n) => n.toString().padLeft(2, '0');
+      String saveTimeMilli(int n) => n.toString().padLeft(3, '0');
       final _min = saveTime(duration.inMinutes.remainder(60));
       final _sec = saveTime(duration.inSeconds.remainder(60));
-      final _milSec = saveTime(duration.inMilliseconds.remainder(1000));
+      final _milSec = saveTimeMilli(duration.inMilliseconds.remainder(1000));
       mark = _min + ':' + _sec + '.' + _milSec.substring(1, 3);
       count++;
       final textCount = saveTime(count);
+
       fields.insert(0, '$textCount.   $mark');
+      _key.currentState!.insertItem(
+        0,
+        duration: const Duration(milliseconds: 250),
+      );
     });
   }
-
-  List<String> fields = [''];
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -93,21 +103,30 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(height: 80),
             buildTime(),
             SizedBox(height: 40),
-            Container(
-              height: 300,
+            Expanded(
+              flex: 2,
               child: Scrollbar(
-                child: ListView.builder(
+                child: AnimatedList(
+                  key: _key,
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
-                    itemCount: fields.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Text(fields[index],
+                    initialItemCount: fields.length,
+                    itemBuilder: (BuildContext context, int index, animation) {
+                      return SlideTransition(
+
+                        position: Tween<Offset>(
+                          begin: const Offset(0, -1),
+                          end: Offset.zero,
+                        ).animate(animation),
+                      child: Text(fields[index],
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 30,
                               fontStyle: FontStyle.italic,
-                              color: Colors.green));
+                              color: Colors.green)),
+                      );
                     }),
+
               ),
             ),
             Expanded(child: buildButtons()),
@@ -209,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.green,
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               time,
