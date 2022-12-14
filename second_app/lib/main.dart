@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
+
   final String title;
 
   @override
@@ -35,16 +36,14 @@ class _MyHomePageState extends State<MyHomePage> {
   String mark = '';
   int count = 0;
   List<String> fields = [''];
-  final GlobalKey<AnimatedListState> _key = GlobalKey();
+
+  final _key = GlobalKey<AnimatedListState>();
 
   @override
   initState() {
     super.initState();
-    // startTimer();
-    _reset();
+    _reset(0);
   }
-
-
 
   void _addTime() {
     final addMilliseconds = 10;
@@ -61,17 +60,19 @@ class _MyHomePageState extends State<MyHomePage> {
   void _stopTimer() {
     setState(() => timer?.cancel());
   }
-  void _reset() {
+
+  void _reset(int index) {
     setState(() => duration = Duration());
     mark = '';
+    fields.clear();
     fields = [''];
     count = 0;
-    // _key.currentState!.removeItem(
-    //     0,
-    // (context, animaton)=>
-    //   _reset(),
-    //     });
+    _key.currentState?.removeItem(
+      index,
+      (context, animation) => Text(fields[0]),
+    );
   }
+
   void markTime() {
     setState(() {
       String saveTime(int n) => n.toString().padLeft(2, '0');
@@ -99,6 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             SizedBox(height: 80),
             buildTime(),
@@ -106,27 +108,35 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
               flex: 2,
               child: Scrollbar(
-                child: AnimatedList(
-                  key: _key,
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    initialItemCount: fields.length,
-                    itemBuilder: (BuildContext context, int index, animation) {
-                      return SlideTransition(
 
-                        position: Tween<Offset>(
-                          begin: const Offset(0, -1),
-                          end: Offset.zero,
-                        ).animate(animation),
-                      child: Text(fields[index],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 30,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.green)),
+                child: AnimatedList(
+                    key: _key,
+                    scrollDirection: Axis.vertical,
+
+                    shrinkWrap: true,
+                    //initialItemCount: fields.length,
+                    itemBuilder: (BuildContext context, index, animation) {
+                      if ((fields[0] == '')&(index > 0)) {
+                        index = 0;
+                      }
+                      return SizeTransition(
+
+                        sizeFactor: animation,
+                        // position: Tween<Offset>(
+                        //   begin: const Offset(0, -1),
+                        //   end: Offset.zero,
+                        // ).animate(animation),
+                        key: UniqueKey(),
+                        child: Text(fields[index],
+                            textAlign: TextAlign.center,
+
+                            style: TextStyle(
+                                fontSize: 30,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.green)),
+
                       );
                     }),
-
               ),
             ),
             Expanded(child: buildButtons()),
@@ -165,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (isRunning) {
                     markTime();
                   } else {
-                    _reset();
+                    _reset(0);
                   }
                 },
                 child: Text(isRunning ? ' Mark ' : ' Reset ',
