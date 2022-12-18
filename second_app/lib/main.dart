@@ -33,16 +33,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Duration duration = Duration();
   Timer? timer;
-  String mark = '';
-  int count = 0;
-  List<String> fields = [''];
+  String _mark = '';
+  int _count = 0;
+  List<String> _listOfTimestamps = [''];
 
   final _key = GlobalKey<AnimatedListState>();
 
   @override
   initState() {
     super.initState();
-    _reset(0);
+    _reset(); //вот тут стоял нолик
   }
 
   void _addTime() {
@@ -61,30 +61,33 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() => timer?.cancel());
   }
 
-  void _reset(int index) {
+  void _reset() {
     setState(() => duration = Duration());
-    mark = '';
-    fields.clear();
-    fields = [''];
-    count = 0;
-    _key.currentState?.removeItem(
-      index,
-      (context, animation) => Text(fields[0]),
-    );
+    _mark = '';
+    while (_listOfTimestamps.length > 0) {
+      _listOfTimestamps.removeLast();
+      _key.currentState?.removeItem(0,
+          (BuildContext context, Animation<double> animation) {
+        return Container();
+      });
+    }
+    ;
+    _listOfTimestamps = [''];
+    _count = 0;
   }
 
-  void markTime() {
+  void _markTime() {
     setState(() {
       String saveTime(int n) => n.toString().padLeft(2, '0');
       String saveTimeMilli(int n) => n.toString().padLeft(3, '0');
       final _min = saveTime(duration.inMinutes.remainder(60));
       final _sec = saveTime(duration.inSeconds.remainder(60));
       final _milSec = saveTimeMilli(duration.inMilliseconds.remainder(1000));
-      mark = _min + ':' + _sec + '.' + _milSec.substring(1, 3);
-      count++;
-      final textCount = saveTime(count);
+      _mark = _min + ':' + _sec + '.' + _milSec.substring(1, 3);
+      _count++;
+      final text_count = saveTime(_count);
 
-      fields.insert(0, '$textCount.   $mark');
+      _listOfTimestamps.insert(0, '$text_count.   $_mark');
       _key.currentState!.insertItem(
         0,
         duration: const Duration(milliseconds: 250),
@@ -100,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             SizedBox(height: 80),
             buildTime(),
@@ -108,35 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
               flex: 2,
               child: Scrollbar(
-
-                child: AnimatedList(
-                    key: _key,
-                    scrollDirection: Axis.vertical,
-
-                    shrinkWrap: true,
-                    //initialItemCount: fields.length,
-                    itemBuilder: (BuildContext context, index, animation) {
-                      if ((fields[0] == '')&(index > 0)) {
-                        index = 0;
-                      }
-                      return SizeTransition(
-
-                        sizeFactor: animation,
-                        // position: Tween<Offset>(
-                        //   begin: const Offset(0, -1),
-                        //   end: Offset.zero,
-                        // ).animate(animation),
-                        key: UniqueKey(),
-                        child: Text(fields[index],
-                            textAlign: TextAlign.center,
-
-                            style: TextStyle(
-                                fontSize: 30,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.green)),
-
-                      );
-                    }),
+                child: build_markTime(),
               ),
             ),
             Expanded(child: buildButtons()),
@@ -144,6 +119,35 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       );
+
+  Widget build_markTime() {
+    return AnimatedList(
+        key: _key,
+        scrollDirection: Axis.vertical,
+
+        //shrinkWrap: true,
+        initialItemCount: _listOfTimestamps.length,
+        itemBuilder: (BuildContext context, index, animation) {
+          return SizeTransition(
+            sizeFactor: animation,
+
+            // position: Tween<Offset>(
+            //   begin: const Offset(0, -1),
+            //   end: Offset.zero,
+            // ).animate(animation),
+            key: UniqueKey(),
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(_listOfTimestamps[index],
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.green)),
+            ),
+          );
+        });
+  }
 
   Widget buildButtons() {
     final isRunning = timer == null ? false : timer!.isActive;
@@ -173,12 +177,12 @@ class _MyHomePageState extends State<MyHomePage> {
               ElevatedButton(
                 onPressed: () {
                   if (isRunning) {
-                    markTime();
+                    _markTime();
                   } else {
-                    _reset(0);
+                    _reset();
                   }
                 },
-                child: Text(isRunning ? ' Mark ' : ' Reset ',
+                child: Text(isRunning ? ' mark ' : ' Reset ',
                     style: TextStyle(
                       fontSize: 25,
                     )),
@@ -238,7 +242,7 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.green,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(5),
             ),
             child: Text(
               time,
