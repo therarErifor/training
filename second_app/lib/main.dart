@@ -35,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Timer? timer;
   String _mark = '';
   int _count = 0;
-  List<String> _listOfTimestamps = [''];
+  List<String> _listOfTimeStamps = [''];
 
   final _key = GlobalKey<AnimatedListState>();
 
@@ -64,15 +64,15 @@ class _MyHomePageState extends State<MyHomePage> {
   void _reset() {
     setState(() => duration = Duration());
     _mark = '';
-    while (_listOfTimestamps.length > 0) {
-      _listOfTimestamps.removeLast();
+    while (_listOfTimeStamps.length > 0) {
+      _listOfTimeStamps.removeLast();
       _key.currentState?.removeItem(0,
           (BuildContext context, Animation<double> animation) {
         return Container();
       });
-    }
-    ;
-    _listOfTimestamps = [''];
+      _count--;
+    };
+    _listOfTimeStamps = [''];
     _count = 0;
   }
 
@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _count++;
       final text_count = saveTime(_count);
 
-      _listOfTimestamps.insert(0, '$text_count.   $_mark');
+      _listOfTimeStamps.insert(0, '$text_count.   $_mark');
       _key.currentState!.insertItem(
         0,
         duration: const Duration(milliseconds: 250),
@@ -126,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
         scrollDirection: Axis.vertical,
 
         //shrinkWrap: true,
-        initialItemCount: _listOfTimestamps.length,
+        initialItemCount: _listOfTimeStamps.length,
         itemBuilder: (BuildContext context, index, animation) {
           return SizeTransition(
             sizeFactor: animation,
@@ -138,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
             key: UniqueKey(),
             child: Align(
               alignment: Alignment.center,
-              child: Text(_listOfTimestamps[index],
+              child: Text(_listOfTimeStamps[index],
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       fontSize: 30,
