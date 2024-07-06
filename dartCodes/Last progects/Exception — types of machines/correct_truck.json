@@ -1,0 +1,8 @@
+{
+	"type": "truck",
+	"brand": "Volvo", 
+	"model": "FH", 
+	"color": "White", 
+	"carNumber": "re123r", 
+	"carOwnerName": "Gennadiy"
+}
